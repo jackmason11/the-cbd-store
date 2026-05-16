@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CBD Store Advisor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #0a0f0d;
+      color: #e8f0ec;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #app {
+      width: 100%;
+      max-width: 480px;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: #111812;
+    }
+
+    /* HEADER */
+    #header {
+      padding: 14px 18px;
+      background: #0e1410;
+      border-bottom: 1px solid #1e2e24;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      flex-shrink: 0;
+    }
+
+    #header-icon {
+      width: 36px; height: 36px;
+      background: #1D9E75;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    #header-text p:first-child {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e8f0ec;
+    }
+    #header-text p:last-child {
+      font-size: 11px;
+      color: #5a7a66;
+    }
+
+    #online-badge {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: #1D9E75;
+    }
+    #online-badge span {
+      width: 6px; height: 6px;
+      background: #1D9E75;
+      border-radius: 50%;
+    }
+
+    /* CHIPS */
+    #quick-prompts {
+      padding: 10px 12px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #1e2e24;
+      background: #0e1410;
+      flex-shrink: 0;
+    }
+
+    .chip {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      padding: 5px 11px;
+      border: 1px solid #2a3d30;
+      border-radius: 20px;
+      cursor: pointer;
+      color: #7aab8a;
+      background: transparent;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .chip:hover {
+      background: #1a2e22;
+      color: #a8d4b8;
+      border-color: #3a5a44;
+    }
+
+    /* MESSAGES */
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scrollbar-width: thin;
+      scrollbar-color: #2a3d30 transparent;
+    }
+
+    .msg {
+      max-width: 88%;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      background: #1D9E75;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 16px 16px 4px 16px;
+      font-weight: 500;
+    }
+
+    .msg.agent {
+      align-self: flex-start;
+      background: #1a2520;
+      color: #d4e8da;
+      padding: 11px 14px;
+      border-radius: 4px 16px 16px 16px;
+      border: 1px solid #243328;
+    }
+
+    .msg.agent strong {
+      color: #4fc48a;
+      font-weight: 600;
+    }
+
+    .typing {
+      align-self: flex-start;
+      background: #1a2520;
+      border: 1px solid #243328;
+      padding: 12px 16px;
+      border-radius: 4px 16px 16px 16px;
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #4fc48a;
+      animation: blink 1.2s infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+
+    /* INPUT */
+    #input-row {
+      display: flex;
+      gap: 8px;
+      padding: 10px 12px;
+      border-top: 1px solid #1e2e24;
+      background: #0e1410;
+      flex-shrink: 0;
+    }
+
+    #user-input {
+      flex: 1;
+      padding: 10px 13px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      border-radius: 10px;
+      border: 1px solid #2a3d30;
+      background: #141f18;
+      color: #e8f0ec;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    #user-input::placeholder { color: #3d5a46; }
+    #user-input:focus { border-color: #1D9E75; }
+
+    #send-btn {
+      background: #1D9E75;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      transition: background 0.15s, transform 0.1s;
+    }
+    #send-btn:hover { background: #17845f; }
+    #send-btn:active { transform: scale(0.95); }
+    #send-btn:disabled { background: #1e2e24; color: #3d5a46; cursor: not-allowed; }
+
+    #send-btn svg {
+      width: 18px; height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <div id="header">
+    <div id="header-icon">🌿</div>
+    <div id="header-text">
+      <p>The CBD Store Advisor</p>
+      <p>West Shore Wellness · Holland, MI</p>
+    </div>
+    <div id="online-badge"><span></span>Live</div>
+  </div>
+
+  <div id="quick-prompts">
+    <button class="chip" onclick="sendChip('Customer has trouble sleeping and wants something natural')">😴 Sleep</button>
+    <button class="chip" onclick="sendChip('Customer has anxiety and stress, wants to stay clear-headed')">😰 Anxiety</button>
+    <button class="chip" onclick="sendChip('Customer has chronic pain and wants relief')">🤕 Pain</button>
+    <button class="chip" onclick="sendChip('Customer is brand new to CBD, nervous, wants something mild')">👋 New to CBD</button>
+    <button class="chip" onclick="sendChip('Customer wants to relax after work without getting high')">🛋️ Relax</button>
+    <button class="chip" onclick="sendChip('Customer wants help with focus and productivity')">🧠 Focus</button>
+  </div>
+
+  <div id="messages">
+    <div class="msg agent">
+      Hey! Describe your customer's situation — what they're dealing with, experience level, any preferences — and I'll tell you exactly what to recommend. 🌿
+    </div>
+  </div>
+
+  <div id="input-row">
+    <input type="text" id="user-input" placeholder="e.g. back pain, doesn't want to feel high..." />
+    <button id="send-btn" onclick="send()" aria-label="Send">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+
+</div>
+
+<script>
+const SYSTEM = `You are a knowledgeable wellness advisor assistant at The CBD Store (West Shore Wellness) in Holland, Michigan. You help store clerks quickly recommend the right products to customers in real time, mid-conversation on the sales floor.
+
+When a clerk describes a customer's situation, give a SHORT, SCANNABLE recommendation they can act on immediately. Format EXACTLY like this every time:
+
+**Top pick:** [product type + specific reason]
+**Also consider:** [1-2 alternatives with brief reason]
+**Key talking point:** [one sentence to say to the customer]
+
+Rules:
+- Under 120 words total
+- Be specific about cannabinoids and formats
+- For new/nervous customers, always recommend starting low (10-25mg)
+- Never make medical claims — use "may help with" or "customers often find relief with"
+- If unsure, ask one clarifying question
+
+Cannabinoid quick reference:
+- CBD: non-psychoactive, anxiety, inflammation, general wellness
+- CBN: strong sleep aid, often combined with CBD
+- Delta-8 THC: mildly psychoactive, relaxing, great for anxiety/pain, smoother than Delta-9
+- Delta-9 THC (hemp, under 0.3%): mild euphoria, relaxing
+- THCA: non-psychoactive raw, converts to THC when heated
+- HHC: similar to Delta-8, slightly more potent
+- CBC: anti-inflammatory, mood support
+- CBG: focus, inflammation, appetite
+
+Format quick reference:
+- Tinctures: 15-45 min onset, precise dosing, good for daily use
+- Gummies: 1-2 hr onset, long lasting, easiest for beginners
+- Topicals: local pain/inflammation only, zero psychoactive effect
+- Vapes/flower: fastest onset (minutes), shortest duration
+- Capsules: like gummies, consistent dosing, no taste
+
+Common situations:
+- Sleep: CBD+CBN gummies at night, higher mg (25-50mg), take 1-2hrs before bed
+- Anxiety (no high): CBD tincture or gummies, avoid Delta-8/9, start low
+- Pain (local): topical first, add oral CBD if needed
+- Pain (systemic): CBD+Delta-8 gummies or tincture
+- Beginners: 10-25mg CBD gummies, set expectation on timing (1-2 hrs)
+- Relax no high: CBD gummies evening, or low-dose Delta-8 if open to mild effect
+- Focus: CBG tincture or CBD low dose morning`;
+
+const msgs = document.getElementById('messages');
+const input = document.getElementById('user-input');
+const btn = document.getElementById('send-btn');
+let history = [];
+
+function renderText(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+function addMsg(role, text) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + (role === 'user' ? 'user' : 'agent');
+  div.innerHTML = role === 'agent' ? renderText(text) : text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function showTyping() {
+  const t = document.createElement('div');
+  t.className = 'typing';
+  t.id = 'typing';
+  t.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+  msgs.appendChild(t);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+function sendChip(text) {
+  input.value = text;
+  send();
+}
+
+async function send() {
+  const text = input.value.trim();
+  if (!text || btn.disabled) return;
+  input.value = '';
+  btn.disabled = true;
+
+  addMsg('user', text);
+  history.push({ role: 'user', content: text });
+  showTyping();
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 1000,
+        system: SYSTEM,
+        messages: history
+      })
+    });
+    const data = await res.json();
+    console.log('response:', JSON.stringify(data)); const reply = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : (data.error ? 'API Error: ' + data.error.message : 'Something went wrong — try again.');
+    removeTyping();
+    addMsg('agent', reply);
+    history.push({ role: 'assistant', content: reply });
+  } catch(e) {
+    removeTyping();
+    addMsg('agent', 'Connection error — check your internet and try again.');
+  }
+
+  btn.disabled = false;
+  input.focus();
+}
+
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    send();
+  }
+});
+</script>
+</body>
+</html>
